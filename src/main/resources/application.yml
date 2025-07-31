@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: coupit
+    name: coufit
 
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
