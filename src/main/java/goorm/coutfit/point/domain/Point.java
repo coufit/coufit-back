@@ -52,5 +52,20 @@ public class Point {
         int days = (int) ChronoUnit.DAYS.between(now, expireDate);
         return days < 0 ? 0 : days;
     }
+
+    public void charge(int amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("충전 금액은 0보다 작을 수 없습니다.");
+        }
+        this.pointBalance += amount;
+    }
+
+    public static Point create(User user) {
+        return Point.builder()
+                .user(user)
+                .pointBalance(0)
+                .expiredAt(LocalDateTime.now().plusDays(30)) // TODO: 임시로 30일 후로 설정
+                .build();
+    }
 }
 
