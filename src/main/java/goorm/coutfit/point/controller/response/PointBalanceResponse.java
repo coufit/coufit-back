@@ -6,25 +6,25 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class BalanceResponse {
+public class PointBalanceResponse {
     private Integer pointBalance;
     private Integer expireAmount;
     private Integer expireInDays;
 
-    public static BalanceResponse from(Point point) {
+    public static PointBalanceResponse from(Point point) {
         int pointBalance = point.getPointBalance();
         int expireInDays = point.getExpireInDays();
         int expireAmount = pointBalance;
 
-        return BalanceResponse.builder()
+        return PointBalanceResponse.builder()
             .pointBalance(pointBalance)
             .expireAmount(expireAmount)
             .expireInDays(expireInDays)
             .build();
     }
 
-    public static BalanceResponse empty() {
-        return BalanceResponse.builder()
+    public static PointBalanceResponse empty() {
+        return PointBalanceResponse.builder()
             .pointBalance(0)
             .expireAmount(0)
             .expireInDays(0)
