@@ -1,9 +1,14 @@
 package goorm.coutfit.point.service;
 
-import goorm.coutfit.point.controller.response.BalanceResponse;
+import goorm.coutfit.point.controller.response.PointBalanceResponse;
+import goorm.coutfit.point.controller.response.PointSummaryResponse;
+import goorm.coutfit.point.repository.PaymentHistoryRepository;
 import goorm.coutfit.point.repository.PointRepository;
 import goorm.coutfit.user.domain.User;
 import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,11 +18,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class PointService {
     
     private final PointRepository pointRepository;
+    private final PaymentHistoryRepository paymentHistoryRepository;
     
     @Transactional(readOnly = true)
-    public BalanceResponse getCurrentBalance(User user) {
+    public PointBalanceResponse getCurrentBalance(User user) {
         return pointRepository.findByUserId(user.getId())
-                                .map(BalanceResponse::from)
-                                .orElse(BalanceResponse.empty());
+                                .map(PointBalanceResponse::from)
+                                .orElse(PointBalanceResponse.empty());
+    }
+
+    @Transactional(readOnly = true)
+    public PointSummaryResponse getMonthlySummary(User user){
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfMonth = now.withDayOfMonth(1).toLocalDate().atStartOfDay();
+        
+        return paymentHistoryRepository.getMonthlySummary(user.getId(), startOfMonth, now);
     }
 }

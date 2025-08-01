@@ -5,7 +5,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import goorm.coutfit.common.response.BaseResponse;
-import goorm.coutfit.point.controller.response.BalanceResponse;
+import goorm.coutfit.point.controller.response.PointBalanceResponse;
+import goorm.coutfit.point.controller.response.PointSummaryResponse;
 import goorm.coutfit.point.service.PointService;
 import goorm.coutfit.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -19,14 +20,22 @@ public class PointController {
     private final PointService pointService;
     
     @GetMapping("/balance")
-    public BaseResponse<BalanceResponse> balance(){
-        
+    public BaseResponse<PointBalanceResponse> balance(){
         // TODO: 추후 유저 연동 필요
         User currentUser = getDummyUser();
         
-        BalanceResponse response = pointService.getCurrentBalance(currentUser);
+        PointBalanceResponse response = pointService.getCurrentBalance(currentUser);
 
-        return BaseResponse.success("현재 잔액 조회 완료", response);
+        return BaseResponse.success("현재 잔액 조회 성공", response);
+    }
+
+    @GetMapping("/summary")
+    public BaseResponse<PointSummaryResponse> summary(){
+        // TODO: 추후 유저 연동 필요
+        User currentUser = getDummyUser();
+
+        PointSummaryResponse response = pointService.getMonthlySummary(currentUser);
+        return BaseResponse.success("소비 요약 정보 조회 성공", response);
     }
 
     /**
