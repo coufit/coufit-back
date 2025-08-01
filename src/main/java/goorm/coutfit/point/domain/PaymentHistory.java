@@ -44,4 +44,8 @@ public class PaymentHistory {
 
     @CreationTimestamp
     private LocalDateTime paidAt;
+
+    public int getSavedAmount(){
+        return (int) (amount * 0.10);
+    }
 }
