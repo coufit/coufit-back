@@ -70,9 +70,7 @@ public class PointService {
 
         point.charge(amount);
 
-        ChargeHistory chargeHistory = ChargeHistory.create(user, amount, paymentMethod);
-        chargeHistoryRepository.save(ChargeHistory.create(user, amount, paymentMethod));
-
+        ChargeHistory chargeHistory = chargeHistoryRepository.save(ChargeHistory.create(user, amount, paymentMethod));
         return PointChargeResponse.from(chargeHistory, point.getPointBalance());
     }
 }
