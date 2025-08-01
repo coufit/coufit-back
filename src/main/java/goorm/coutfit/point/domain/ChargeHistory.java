@@ -45,4 +45,12 @@ public class ChargeHistory {
 
     @CreationTimestamp
     private LocalDateTime chargedAt;
+
+    public static ChargeHistory create(User user, int amount, PaymentMethod paymentMethod) {
+        return ChargeHistory.builder()
+                .user(user)
+                .amount(amount)
+                .paymentMethod(paymentMethod)
+                .build();
+    }
 }

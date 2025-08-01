@@ -1,9 +1,14 @@
 package goorm.coutfit.point.service;
 
 import goorm.coutfit.point.controller.response.PointBalanceResponse;
+import goorm.coutfit.point.controller.response.PointChargeResponse;
 import goorm.coutfit.point.controller.response.PointSpendingHistoryResponse;
 import goorm.coutfit.point.controller.response.PointSummaryResponse;
+import goorm.coutfit.point.domain.ChargeHistory;
 import goorm.coutfit.point.domain.PaymentHistory;
+import goorm.coutfit.point.domain.PaymentMethod;
+import goorm.coutfit.point.domain.Point;
+import goorm.coutfit.point.repository.ChargeHistoryRepository;
 import goorm.coutfit.point.repository.PaymentHistoryRepository;
 import goorm.coutfit.point.repository.PointRepository;
 import goorm.coutfit.user.domain.User;
@@ -24,6 +29,7 @@ public class PointService {
     
     private final PointRepository pointRepository;
     private final PaymentHistoryRepository paymentHistoryRepository;
+    private final ChargeHistoryRepository chargeHistoryRepository;
     
     @Transactional(readOnly = true)
     public PointBalanceResponse getCurrentBalance(User user) {
@@ -54,5 +60,19 @@ public class PointService {
         Page<PaymentHistory> paymentHistories = paymentHistoryRepository.findByUserOrderByPaidAtDesc(user, pageable);
         
         return paymentHistories.map(PointSpendingHistoryResponse::from);
+    }
+
+
+    @Transactional
+    public PointChargeResponse chargePoints(User user, Integer amount, PaymentMethod paymentMethod) {
+        Point point = pointRepository.findByUserId(user.getId())
+            .orElseGet(() -> pointRepository.save(Point.create(user)));
+
+        point.charge(amount);
+
+        ChargeHistory chargeHistory = ChargeHistory.create(user, amount, paymentMethod);
+        chargeHistoryRepository.save(ChargeHistory.create(user, amount, paymentMethod));
+
+        return PointChargeResponse.from(chargeHistory, point.getPointBalance());
     }
 }
