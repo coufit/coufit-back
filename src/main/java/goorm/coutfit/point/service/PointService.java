@@ -1,14 +1,19 @@
 package goorm.coutfit.point.service;
 
 import goorm.coutfit.point.controller.response.PointBalanceResponse;
+import goorm.coutfit.point.controller.response.PointSpendingHistoryResponse;
 import goorm.coutfit.point.controller.response.PointSummaryResponse;
+import goorm.coutfit.point.domain.PaymentHistory;
 import goorm.coutfit.point.repository.PaymentHistoryRepository;
 import goorm.coutfit.point.repository.PointRepository;
 import goorm.coutfit.user.domain.User;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,5 +38,21 @@ public class PointService {
         LocalDateTime startOfMonth = now.withDayOfMonth(1).toLocalDate().atStartOfDay();
         
         return paymentHistoryRepository.getMonthlySummary(user.getId(), startOfMonth, now);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PointSpendingHistoryResponse> getPaymentHistory(User user) {
+        List<PaymentHistory> paymentHistories = paymentHistoryRepository.findByUserOrderByPaidAtDesc(user);
+        
+        return paymentHistories.stream()
+                .map(PointSpendingHistoryResponse::from)
+                .toList();
+    }
+    
+    @Transactional(readOnly = true)
+    public Page<PointSpendingHistoryResponse> getPaymentHistoryWithPaging(User user, Pageable pageable) {
+        Page<PaymentHistory> paymentHistories = paymentHistoryRepository.findByUserOrderByPaidAtDesc(user, pageable);
+        
+        return paymentHistories.map(PointSpendingHistoryResponse::from);
     }
 }
