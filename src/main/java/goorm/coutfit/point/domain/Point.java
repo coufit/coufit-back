@@ -1,6 +1,8 @@
 package goorm.coutfit.point.domain;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -12,7 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +32,7 @@ public class Point {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -42,4 +44,13 @@ public class Point {
 
     @Column(nullable = false)
     private LocalDateTime expiredAt;
+
+    public int getExpireInDays() {
+        LocalDate now = LocalDate.now();
+        LocalDate expireDate = expiredAt.toLocalDate();
+
+        int days = (int) ChronoUnit.DAYS.between(now, expireDate);
+        return days < 0 ? 0 : days;
+    }
 }
+
