@@ -30,4 +30,14 @@ public interface PaymentHistoryRepository extends JpaRepository<PaymentHistory, 
     List<PaymentHistory> findByUserOrderByPaidAtDesc(User user);
     
     Page<PaymentHistory> findByUserOrderByPaidAtDesc(User user, Pageable pageable);
+
+
+    @Query(value = """
+        SELECT store_id
+        FROM payment_history
+        GROUP BY store_id
+        ORDER BY COUNT(*) DESC
+        LIMIT 4
+    """, nativeQuery = true)
+    List<Long> findTop4PopularStoreIds();
 }
