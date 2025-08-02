@@ -10,8 +10,13 @@ import goorm.coutfit.store.repository.StoreDiscountRepository;
 import goorm.coutfit.store.repository.StoreRepository;
 import goorm.coutfit.store.repository.StoreSearchRepository;
 import goorm.coutfit.user.domain.User;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +24,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,6 +34,7 @@ public class StoreService {
     private final StoreDiscountRepository storeDiscountRepository;
     private final StoreSearchRepository storeSearchRepository;
     private final CurrentUserUtil currentUserUtil;
+    private final RestTemplate restTemplate;
 
     @Transactional(readOnly = true)
     public StoreDetailResponse getStoreDetail(Long storeId) {
@@ -107,5 +114,44 @@ public class StoreService {
         }
         // 일반적인 경우
         return !now.isBefore(openTime) && !now.isAfter(closeTime);
+    }
+
+    public List<StoreResponse> recommendStores(Long userId, Double latitude, Double longitude) {
+        // FastAPI 요청
+        String url = "http://172.16.24.58:8000/recommend/top-stores";
+        Map<String, Object> requestBody = Map.of(
+                "user_id", userId,
+                "user_lat", latitude,
+                "user_lon", longitude
+        );
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<List> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                request,
+                List.class
+        );
+
+        // 추천된 store_id 리스트
+        List<Long> recommendedIds = response.getBody();
+        if (recommendedIds == null || recommendedIds.isEmpty()) {
+            return List.of();
+        }
+
+        // DB에서 매핑 후 순서 보존
+        List<StoreWithDistanceProjection> stores = storeRepository.findByIdIn(recommendedIds);
+
+        Map<Long, StoreWithDistanceProjection> storeMap = stores.stream()
+                .collect(Collectors.toMap(StoreWithDistanceProjection::getId, Function.identity()));
+
+        return recommendedIds.stream()
+                .map(storeMap::get)
+                .filter(Objects::nonNull)
+                .map(StoreResponse::from)
+                .collect(Collectors.toList());
     }
 }

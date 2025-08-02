@@ -47,4 +47,22 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
             @Param("longitude") Double longitude,
             @Param("radius") Integer radius
     );
+
+    @Query("""
+    SELECT s.id AS id,
+           s.name AS name,
+           s.categoryName AS categoryName,
+           s.openTime AS openTime,
+           s.closeTime AS closeTime,
+           s.address AS address,
+           s.latitude AS latitude,
+           s.longitude AS longitude,
+           s.phoneNumber AS phoneNumber,
+           si.imageUrl AS imageUrl
+    FROM Store s
+    LEFT JOIN s.storeImage si
+    WHERE s.id IN :ids
+    """)
+    List<StoreWithDistanceProjection> findByIdIn(@Param("ids") List<Long> ids);
+
 }

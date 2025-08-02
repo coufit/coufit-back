@@ -4,6 +4,7 @@ import goorm.coutfit.common.response.BaseResponse;
 import goorm.coutfit.store.dto.StoreDetailResponse;
 import goorm.coutfit.store.dto.StoreResponse;
 import goorm.coutfit.store.dto.StoreSearchResponse;
+import goorm.coutfit.store.dto.request.StoreRecommendationRequest;
 import goorm.coutfit.store.dto.request.StoreSearchRequest;
 import goorm.coutfit.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
@@ -39,5 +40,14 @@ public class StoreController {
     public BaseResponse<StoreSearchResponse> search(StoreSearchRequest request) {
         StoreSearchResponse response = storeService.searchStores(request);
         return BaseResponse.success("가맹점 검색 결과 조회 성공", response);
+    }
+
+    @GetMapping("/recommend")
+    public List<StoreResponse> recommendStores(
+            @RequestParam Long userId,
+            @RequestParam Double latitude,
+            @RequestParam Double longitude
+    ) {
+        return storeService.recommendStores(userId, latitude, longitude);
     }
 }
