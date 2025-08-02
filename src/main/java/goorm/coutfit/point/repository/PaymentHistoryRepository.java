@@ -39,4 +39,7 @@ public interface PaymentHistoryRepository extends JpaRepository<PaymentHistory, 
         LIMIT 4
     """, nativeQuery = true)
     List<Long> findTop4PopularStoreIds();
+
+    @Query("SELECT ph From PaymentHistory ph JOIN FETCH ph.store WHERE ph.user.id =:userId")
+    List<PaymentHistory> findByUserIdWithStore(Long userId);
 }
