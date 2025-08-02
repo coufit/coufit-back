@@ -57,12 +57,23 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
            s.address AS address,
            s.latitude AS latitude,
            s.longitude AS longitude,
+           (
+                6371000 * acos(
+                    cos(radians(:latitude)) * cos(radians(s.latitude)) *
+                    cos(radians(s.longitude) - radians(:longitude)) +
+                    sin(radians(:latitude)) * sin(radians(s.latitude))
+                )
+            ) AS distance,
            s.phoneNumber AS phoneNumber,
            si.imageUrl AS imageUrl
     FROM Store s
     LEFT JOIN s.storeImage si
     WHERE s.id IN :ids
     """)
-    List<StoreWithDistanceProjection> findByIdIn(@Param("ids") List<Long> ids);
+    List<StoreWithDistanceProjection> findByIdIn(
+            @Param("ids") List<Long> ids,
+            @Param("latitude") Double latitude,
+            @Param("longitude") Double longitude
+    );
 
 }

@@ -143,15 +143,20 @@ public class StoreService {
         }
 
         // DB에서 매핑 후 순서 보존
-        List<StoreWithDistanceProjection> stores = storeRepository.findByIdIn(recommendedIds);
+        List<StoreWithDistanceProjection> stores = storeRepository.findByIdIn(recommendedIds, latitude, longitude);
 
-        Map<Long, StoreWithDistanceProjection> storeMap = stores.stream()
-                .collect(Collectors.toMap(StoreWithDistanceProjection::getId, Function.identity()));
+        return stores == null ? Collections.emptyList() :
+                stores.stream()
+                        .map(StoreResponse::from)
+                        .toList();
 
-        return recommendedIds.stream()
-                .map(storeMap::get)
-                .filter(Objects::nonNull)
-                .map(StoreResponse::from)
-                .collect(Collectors.toList());
+//        Map<Long, StoreWithDistanceProjection> storeMap = stores.stream()
+//                .collect(Collectors.toMap(StoreWithDistanceProjection::getId, Function.identity()));
+//
+//        return recommendedIds.stream()
+//                .map(storeMap::get)
+//                .filter(Objects::nonNull)
+//                .map(StoreResponse::from)
+//                .collect(Collectors.toList());
     }
 }
