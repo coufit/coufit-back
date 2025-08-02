@@ -56,7 +56,7 @@ public class Store {
 
     private LocalTime openTime;
     private LocalTime closeTime;
-    
+
     @Column(nullable = false, length = 30)
     private String phoneNumber;
 
@@ -66,4 +66,17 @@ public class Store {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_discount_id")
     private StoreDiscount storeDiscount;
+
+    public boolean isOpenNow() {
+        if (openTime == null || closeTime == null) return false;
+
+        LocalTime now = LocalTime.now();
+
+        if (closeTime.isBefore(openTime)) {
+            return now.isAfter(openTime) || now.isBefore(closeTime);
+        } else {
+            return !now.isBefore(openTime) && !now.isAfter(closeTime);
+
+        }
+    }
 }

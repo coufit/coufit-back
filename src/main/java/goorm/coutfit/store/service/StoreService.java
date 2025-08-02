@@ -2,18 +2,22 @@ package goorm.coutfit.store.service;
 
 import goorm.coutfit.store.domain.Store;
 import goorm.coutfit.store.domain.StoreDiscount;
-import goorm.coutfit.store.dto.DiscountResponse;
-import goorm.coutfit.store.dto.StoreDetailResponse;
-import goorm.coutfit.store.dto.StoreMarkerResponse;
+import goorm.coutfit.store.dto.*;
+import goorm.coutfit.store.dto.request.StoreSearchRequest;
 import goorm.coutfit.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class StoreService {
@@ -55,14 +59,36 @@ public class StoreService {
                 imageUrl
         );
     }
+    @Transactional(readOnly = true)
+    public List<StoreResponse> getNearbyStores(Double latitude, Double longitude, Integer radius) {
+        List<StoreWithDistance> results = storeRepository.findNearbyStoresWithDistance(latitude, longitude, radius);
+        return results == null ? Collections.emptyList() :
+                results.stream()
+                        .map(StoreResponse::from)
+                        .toList();
+    }
 
-   public List<StoreMarkerResponse> getNearbyStores(Double latitude, Double longitude, Integer radius) {
-       List<Store> results = storeRepository.findNearbyStores(latitude, longitude, radius);
-       return results.stream()
-               .map(StoreMarkerResponse::from)
-               .toList();
-   }
+    @Transactional(readOnly = true)
+    public StoreSearchResponse searchStores(StoreSearchRequest request) {
+        List<StoreWithDistance> results = storeRepository.searchStores(
+                request.getKeyword(),
+                request.getLatitude(),
+                request.getLongitude(),
+                request.getRegion(),
+                request.getArea(),
+                request.getCategory(),
+                request.getIsOpenNow(),
+                request.getSort()
+        );
+        log.info(String.valueOf(results==null));
+        List<StoreResponse> storeList =
+                results == null ? Collections.emptyList() :
+                        results.stream()
+                                .map(StoreResponse::from)
+                                .toList();
 
+        return StoreSearchResponse.from(storeList);
+    }
 
     public boolean isStoreOpen(LocalTime now, LocalTime openTime, LocalTime closeTime) {
         // 자정을 넘기는 영업시간일 경우 처리 (ex: 22:00 ~ 02:00)

@@ -14,7 +14,6 @@ public class PointSpendingHistoryResponse {
     private String category;
     private LocalDateTime paidAt;
     private Integer amount;
-    private Integer savedAmount;
     private String imageUrl;
 
     public static PointSpendingHistoryResponse from(PaymentHistory paymentHistory) {
@@ -28,7 +27,6 @@ public class PointSpendingHistoryResponse {
                 .category(store.getCategoryName())
                 .paidAt(paymentHistory.getPaidAt())
                 .amount(paymentHistory.getAmount())
-                .savedAmount(paymentHistory.getSavedAmount())
                 .imageUrl(imageUrl)
                 .build();
     }
