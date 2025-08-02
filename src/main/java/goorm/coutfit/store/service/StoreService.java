@@ -5,9 +5,6 @@ import goorm.coutfit.store.domain.Store;
 import goorm.coutfit.store.domain.StoreDiscount;
 import goorm.coutfit.store.dto.*;
 import goorm.coutfit.store.dto.request.StoreSearchRequest;
-import goorm.coutfit.store.dto.DiscountResponse;
-import goorm.coutfit.store.dto.StoreDetailResponse;
-import goorm.coutfit.store.dto.StoreMarkerResponse;
 import goorm.coutfit.store.repository.StoreDiscountRepository;
 import goorm.coutfit.store.repository.StoreRepository;
 import goorm.coutfit.user.domain.User;
@@ -20,8 +17,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
