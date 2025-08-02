@@ -4,6 +4,7 @@ import goorm.coutfit.common.response.BaseResponse;
 import goorm.coutfit.store.dto.RegionCategoryResponse;
 import goorm.coutfit.store.service.RegionCategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/regions")
+@CrossOrigin(origins = "http://localhost:3000")
 public class RegionCategoryController {
     private final RegionCategoryService regionCategoryService;
 
