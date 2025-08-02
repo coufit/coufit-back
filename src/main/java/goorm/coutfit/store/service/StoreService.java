@@ -4,6 +4,7 @@ import goorm.coutfit.store.domain.Store;
 import goorm.coutfit.store.domain.StoreDiscount;
 import goorm.coutfit.store.dto.DiscountResponse;
 import goorm.coutfit.store.dto.StoreDetailResponse;
+import goorm.coutfit.store.dto.StoreMarkerResponse;
 import goorm.coutfit.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -53,6 +55,14 @@ public class StoreService {
                 imageUrl
         );
     }
+
+   public List<StoreMarkerResponse> getNearbyStores(Double latitude, Double longitude, Integer radius) {
+       List<Store> results = storeRepository.findNearbyStores(latitude, longitude, radius);
+       return results.stream()
+               .map(StoreMarkerResponse::from)
+               .toList();
+   }
+
 
     public boolean isStoreOpen(LocalTime now, LocalTime openTime, LocalTime closeTime) {
         // 자정을 넘기는 영업시간일 경우 처리 (ex: 22:00 ~ 02:00)
