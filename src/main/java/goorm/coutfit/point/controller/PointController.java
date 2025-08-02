@@ -2,6 +2,7 @@ package goorm.coutfit.point.controller;
 
 import java.util.List;
 
+import goorm.coutfit.auth.CurrentUserUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -24,35 +25,32 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(origins = "http://localhost:3000")
 public class PointController {
     private final PointService pointService;
+    private final CurrentUserUtil currentUserUtil;
     
     @GetMapping("/balance")
     public BaseResponse<PointBalanceResponse> balance(){
-        // TODO: 추후 유저 연동 필요
-        User currentUser = getDummyUser();
-        
+        User currentUser = currentUserUtil.getCurrentUser();
         PointBalanceResponse response = pointService.getCurrentBalance(currentUser);
         return BaseResponse.success("현재 잔액 조회 성공", response);
     }
 
     @GetMapping("/summary")
     public BaseResponse<PointSummaryResponse> summary(){
-        // TODO: 추후 유저 연동 필요
-        User currentUser = getDummyUser();
-
+        User currentUser = currentUserUtil.getCurrentUser();
         PointSummaryResponse response = pointService.getMonthlySummary(currentUser);
         return BaseResponse.success("소비 요약 정보 조회 성공", response);
     }
 
     @GetMapping("/spend/history")
     public BaseResponse<List<PointSpendingHistoryResponse>> allSpendHistory() {
-        User currentUser = getDummyUser(); // TODO: 나중에 실제 유저로 변경
+        User currentUser = currentUserUtil.getCurrentUser();
         List<PointSpendingHistoryResponse> response = pointService.getPaymentHistory(currentUser);
         return BaseResponse.success("소비 내역 전체 조회 성공", response);
     }
 
     @GetMapping("/spend/history/paged")
     public BaseResponse<Page<PointSpendingHistoryResponse>> spendHistoryWithPaging(Pageable pageable) {
-        User currentUser = getDummyUser(); // TODO: 나중에 실제 유저로 변경
+        User currentUser = currentUserUtil.getCurrentUser();
         Page<PointSpendingHistoryResponse> response = pointService.getPaymentHistoryWithPaging(currentUser, pageable);
         return BaseResponse.success("소비 내역 페이지 조회 성공", response);
     }
@@ -60,7 +58,7 @@ public class PointController {
 
     @PostMapping("/charge")
     public BaseResponse<PointChargeResponse> chargePoints(@RequestBody PointChargeRequest request) {
-        User currentUser = getDummyUser(); // TODO: 나중에 실제 유저로 변경
+        User currentUser = currentUserUtil.getCurrentUser();
         PointChargeResponse response = pointService.chargePoints(currentUser, request.getAmount(), request.getPaymentMethod());
         return BaseResponse.success("포인트 충전 성공", response);
     }
