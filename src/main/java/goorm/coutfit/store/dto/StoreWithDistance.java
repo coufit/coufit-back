@@ -1,17 +1,41 @@
 package goorm.coutfit.store.dto;
 
-import java.sql.Time;
+import goorm.coutfit.store.projection.StoreWithDistanceProjection;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
-public record StoreWithDistance(
-        Long id,
-        String name,
-        String categoryName,
-        Time openTime,
-        Time closeTime,
-        String address,
-        Double latitude,
-        Double longitude,
-        Double distance,
-        String phoneNumber,
-        String imageUrl
-) {}
+import java.time.LocalTime;
+
+@Getter
+@AllArgsConstructor
+@Builder
+public class StoreWithDistance {
+    private Long id;
+    private String name;
+    private String categoryName;
+    private LocalTime openTime;
+    private LocalTime closeTime;
+    private String address;
+    private Double latitude;
+    private Double longitude;
+    private Double distance;
+    private String phoneNumber;
+    private String imageUrl;
+
+    public static StoreWithDistance from(StoreWithDistanceProjection p) {
+        return StoreWithDistance.builder()
+                .id(p.getId())
+                .name(p.getName())
+                .categoryName(p.getCategoryName())
+                .openTime(p.getOpenTime())
+                .closeTime(p.getCloseTime())
+                .address(p.getAddress())
+                .latitude(p.getLatitude())
+                .longitude(p.getLongitude())
+                .distance(p.getDistance())
+                .phoneNumber(p.getPhoneNumber())
+                .imageUrl(p.getImageUrl())
+                .build();
+    }
+}

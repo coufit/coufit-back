@@ -1,6 +1,6 @@
 package goorm.coutfit.store.dto;
 
-import goorm.coutfit.store.domain.Store;
+import goorm.coutfit.store.projection.StoreWithDistanceProjection;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -23,21 +23,37 @@ public class StoreResponse {
     private String imageUrl;
 
     public static StoreResponse from(StoreWithDistance storeWithDistance) {
-        LocalTime openTime = storeWithDistance.openTime().toLocalTime();
-        LocalTime closeTime = storeWithDistance.closeTime().toLocalTime();
         return StoreResponse.builder()
-                .storeId(storeWithDistance.id())
-                .name(storeWithDistance.name())
-                .categoryName(storeWithDistance.categoryName())
-                .openTime(openTime)
-                .closeTime(closeTime)
-                .isOpenNow(isStoreOpenNow(openTime, closeTime))
-                .address(storeWithDistance.address())
-                .distance(storeWithDistance.distance() != null ? storeWithDistance.distance().intValue() : 0) // 현재 위치 값 없으면 0으로 반환
-                .latitude(storeWithDistance.latitude())
-                .longitude(storeWithDistance.longitude())
-                .phoneNumber(storeWithDistance.phoneNumber())
-                .imageUrl(storeWithDistance.imageUrl())
+                .storeId(storeWithDistance.getId())
+                .name(storeWithDistance.getName())
+                .categoryName(storeWithDistance.getCategoryName())
+                .openTime(storeWithDistance.getOpenTime())
+                .closeTime(storeWithDistance.getCloseTime())
+                .isOpenNow(isStoreOpenNow(storeWithDistance.getOpenTime(), storeWithDistance.getCloseTime()))
+                .address(storeWithDistance.getAddress())
+                .distance(storeWithDistance.getDistance() != null ? storeWithDistance.getDistance().intValue() : 0) // 현재 위치 값 없으면 0으로 반환
+                .latitude(storeWithDistance.getLatitude())
+                .longitude(storeWithDistance.getLongitude())
+                .phoneNumber(storeWithDistance.getPhoneNumber())
+                .imageUrl(storeWithDistance.getImageUrl())
+                .build();
+    }
+
+
+    public static StoreResponse from(StoreWithDistanceProjection storeWithDistance) {
+        return StoreResponse.builder()
+                .storeId(storeWithDistance.getId())
+                .name(storeWithDistance.getName())
+                .categoryName(storeWithDistance.getCategoryName())
+                .openTime(storeWithDistance.getOpenTime())
+                .closeTime(storeWithDistance.getCloseTime())
+                .isOpenNow(isStoreOpenNow(storeWithDistance.getOpenTime(), storeWithDistance.getCloseTime()))
+                .address(storeWithDistance.getAddress())
+                .distance(storeWithDistance.getDistance() != null ? storeWithDistance.getDistance().intValue() : 0) // 현재 위치 값 없으면 0으로 반환
+                .latitude(storeWithDistance.getLatitude())
+                .longitude(storeWithDistance.getLongitude())
+                .phoneNumber(storeWithDistance.getPhoneNumber())
+                .imageUrl(storeWithDistance.getImageUrl())
                 .build();
     }
 

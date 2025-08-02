@@ -5,8 +5,10 @@ import goorm.coutfit.store.domain.Store;
 import goorm.coutfit.store.domain.StoreDiscount;
 import goorm.coutfit.store.dto.*;
 import goorm.coutfit.store.dto.request.StoreSearchRequest;
+import goorm.coutfit.store.projection.StoreWithDistanceProjection;
 import goorm.coutfit.store.repository.StoreDiscountRepository;
 import goorm.coutfit.store.repository.StoreRepository;
+import goorm.coutfit.store.repository.StoreSearchRepository;
 import goorm.coutfit.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ import java.util.List;
 public class StoreService {
     private final StoreRepository storeRepository;
     private final StoreDiscountRepository storeDiscountRepository;
+    private final StoreSearchRepository storeSearchRepository;
     private final CurrentUserUtil currentUserUtil;
 
     @Transactional(readOnly = true)
@@ -68,7 +71,7 @@ public class StoreService {
     }
     @Transactional(readOnly = true)
     public List<StoreResponse> getNearbyStores(Double latitude, Double longitude, Integer radius) {
-        List<StoreWithDistance> results = storeRepository.findNearbyStoresWithDistance(latitude, longitude, radius);
+        List<StoreWithDistanceProjection> results = storeRepository.findNearbyStoresWithDistance(latitude, longitude, radius);
         return results == null ? Collections.emptyList() :
                 results.stream()
                         .map(StoreResponse::from)
@@ -77,7 +80,7 @@ public class StoreService {
 
     @Transactional(readOnly = true)
     public StoreSearchResponse searchStores(StoreSearchRequest request) {
-        List<StoreWithDistance> results = storeRepository.searchStores(
+        List<StoreWithDistance> results = storeSearchRepository.searchStores(
                 request.getKeyword(),
                 request.getLatitude(),
                 request.getLongitude(),
