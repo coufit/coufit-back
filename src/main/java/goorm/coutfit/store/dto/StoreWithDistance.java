@@ -1,17 +1,17 @@
 package goorm.coutfit.store.dto;
 
-import java.sql.Time;
+import java.time.LocalTime;
 
-public record StoreWithDistance(
-        Long id,
-        String name,
-        String categoryName,
-        Time openTime,
-        Time closeTime,
-        String address,
-        Double latitude,
-        Double longitude,
-        Double distance,
-        String phoneNumber,
-        String imageUrl
-) {}
+public interface StoreWithDistance {
+    Long getId();
+    String getName();
+    String getCategoryName();
+    LocalTime getOpenTime();
+    LocalTime getCloseTime();
+    String getAddress();
+    Double getLatitude();
+    Double getLongitude();
+    Double getDistance();
+    String getPhoneNumber();
+    String getImageUrl();
+}
