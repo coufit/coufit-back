@@ -1,10 +1,16 @@
 package goorm.coutfit.store.service;
 
+import goorm.coutfit.auth.CurrentUserUtil;
 import goorm.coutfit.store.domain.Store;
 import goorm.coutfit.store.domain.StoreDiscount;
 import goorm.coutfit.store.dto.*;
 import goorm.coutfit.store.dto.request.StoreSearchRequest;
+import goorm.coutfit.store.dto.DiscountResponse;
+import goorm.coutfit.store.dto.StoreDetailResponse;
+import goorm.coutfit.store.dto.StoreMarkerResponse;
+import goorm.coutfit.store.repository.StoreDiscountRepository;
 import goorm.coutfit.store.repository.StoreRepository;
+import goorm.coutfit.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,13 +28,19 @@ import java.util.stream.Collectors;
 @Service
 public class StoreService {
     private final StoreRepository storeRepository;
+    private final StoreDiscountRepository storeDiscountRepository;
+    private final CurrentUserUtil currentUserUtil;
 
     @Transactional(readOnly = true)
     public StoreDetailResponse getStoreDetail(Long storeId) {
+        User currentUser = currentUserUtil.getCurrentUser();
+
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 가맹점이 존재하지 않습니다."));
 
-        StoreDiscount discount = store.getStoreDiscount();
+        StoreDiscount discount = storeDiscountRepository.findFirstByStoreIdOrderByCreatedAtDesc(storeId)
+                .orElse(null);
+
         DiscountResponse discountResponse = null;
         if (discount != null) {
             discountResponse = new DiscountResponse(

@@ -63,10 +63,6 @@ public class Store {
     @OneToOne(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private StoreImage storeImage;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_discount_id")
-    private StoreDiscount storeDiscount;
-
     public boolean isOpenNow() {
         if (openTime == null || closeTime == null) return false;
 
