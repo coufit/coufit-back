@@ -16,14 +16,13 @@ public interface PaymentHistoryRepository extends JpaRepository<PaymentHistory, 
 
     @Query("""
         SELECT new goorm.coutfit.point.controller.response.PointSummaryResponse(
-            COALESCE(SUM(p.amount), 0),
-            COUNT(p),
-            COUNT(DISTINCT p.store.id),
-            0
+            COALESCE(SUM(CASE WHEN p.paidAt BETWEEN :start AND :end THEN p.amount ELSE 0 END), 0),
+            COALESCE(SUM(CASE WHEN p.paidAt BETWEEN :start AND :end THEN 1 ELSE 0 END), 0),      
+            COUNT(DISTINCT CASE WHEN p.paidAt BETWEEN :start AND :end THEN p.store.id ELSE NULL END), 
+            COALESCE(SUM(p.amount), 0)                                                       
         )
-        FROM PaymentHistory p 
-        WHERE p.user.id = :userId 
-        AND p.paidAt BETWEEN :start AND :end
+        FROM PaymentHistory p
+        WHERE p.user.id = :userId
     """)
     PointSummaryResponse getMonthlySummary(Long userId, LocalDateTime start, LocalDateTime end);
 

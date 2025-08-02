@@ -56,10 +56,23 @@ public class Store {
 
     private LocalTime openTime;
     private LocalTime closeTime;
-    
+
     @Column(nullable = false, length = 30)
     private String phoneNumber;
 
     @OneToOne(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private StoreImage storeImage;
+
+    public boolean isOpenNow() {
+        if (openTime == null || closeTime == null) return false;
+
+        LocalTime now = LocalTime.now();
+
+        if (closeTime.isBefore(openTime)) {
+            return now.isAfter(openTime) || now.isBefore(closeTime);
+        } else {
+            return !now.isBefore(openTime) && !now.isAfter(closeTime);
+
+        }
+    }
 }
