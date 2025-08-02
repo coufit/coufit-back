@@ -1,6 +1,6 @@
 package goorm.coutfit.store.dto;
 
-import goorm.coutfit.store.domain.Store;
+import goorm.coutfit.store.projection.StoreWithDistanceProjection;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -23,6 +23,24 @@ public class StoreResponse {
     private String imageUrl;
 
     public static StoreResponse from(StoreWithDistance storeWithDistance) {
+        return StoreResponse.builder()
+                .storeId(storeWithDistance.getId())
+                .name(storeWithDistance.getName())
+                .categoryName(storeWithDistance.getCategoryName())
+                .openTime(storeWithDistance.getOpenTime())
+                .closeTime(storeWithDistance.getCloseTime())
+                .isOpenNow(isStoreOpenNow(storeWithDistance.getOpenTime(), storeWithDistance.getCloseTime()))
+                .address(storeWithDistance.getAddress())
+                .distance(storeWithDistance.getDistance() != null ? storeWithDistance.getDistance().intValue() : 0) // 현재 위치 값 없으면 0으로 반환
+                .latitude(storeWithDistance.getLatitude())
+                .longitude(storeWithDistance.getLongitude())
+                .phoneNumber(storeWithDistance.getPhoneNumber())
+                .imageUrl(storeWithDistance.getImageUrl())
+                .build();
+    }
+
+
+    public static StoreResponse from(StoreWithDistanceProjection storeWithDistance) {
         return StoreResponse.builder()
                 .storeId(storeWithDistance.getId())
                 .name(storeWithDistance.getName())
