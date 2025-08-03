@@ -1,9 +1,6 @@
 package goorm.coutfit.point.service;
 
-import goorm.coutfit.point.controller.response.PointBalanceResponse;
-import goorm.coutfit.point.controller.response.PointChargeResponse;
-import goorm.coutfit.point.controller.response.PointSpendingHistoryResponse;
-import goorm.coutfit.point.controller.response.PointSummaryResponse;
+import goorm.coutfit.point.controller.response.*;
 import goorm.coutfit.point.domain.ChargeHistory;
 import goorm.coutfit.point.domain.PaymentHistory;
 import goorm.coutfit.point.domain.PaymentMethod;
@@ -72,5 +69,13 @@ public class PointService {
 
         ChargeHistory chargeHistory = chargeHistoryRepository.save(ChargeHistory.create(user, amount, paymentMethod));
         return PointChargeResponse.from(chargeHistory, point.getPointBalance());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PointChargeHistoryResponse> getChargeHistory(User user) {
+        List<ChargeHistory> chargeHistories = chargeHistoryRepository.findAllByUserIdOrderByChargedAtDesc(user.getId());
+        return chargeHistories.stream()
+                .map(PointChargeHistoryResponse::from)
+                .toList();
     }
 }

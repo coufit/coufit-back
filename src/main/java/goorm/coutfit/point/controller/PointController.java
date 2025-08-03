@@ -3,16 +3,13 @@ package goorm.coutfit.point.controller;
 import java.util.List;
 
 import goorm.coutfit.auth.CurrentUserUtil;
+import goorm.coutfit.point.controller.response.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import goorm.coutfit.common.response.BaseResponse;
 import goorm.coutfit.point.controller.request.PointChargeRequest;
-import goorm.coutfit.point.controller.response.PointBalanceResponse;
-import goorm.coutfit.point.controller.response.PointChargeResponse;
-import goorm.coutfit.point.controller.response.PointSpendingHistoryResponse;
-import goorm.coutfit.point.controller.response.PointSummaryResponse;
 import goorm.coutfit.point.service.PointService;
 import goorm.coutfit.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +58,13 @@ public class PointController {
         User currentUser = currentUserUtil.getCurrentUser();
         PointChargeResponse response = pointService.chargePoints(currentUser, request.getAmount(), request.getPaymentMethod());
         return BaseResponse.success("포인트 충전 성공", response);
+    }
+
+    @GetMapping("/charge/history")
+    public BaseResponse<List<PointChargeHistoryResponse>> chargeHistory() {
+        User currentUser = currentUserUtil.getCurrentUser();
+        List<PointChargeHistoryResponse> response = pointService.getChargeHistory(currentUser);
+        return BaseResponse.success("포인트 충전 내역 조회 성공", response);
     }
 
     /**
